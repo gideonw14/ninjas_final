@@ -31,7 +31,7 @@ template<class Derived, class T> void swap(BaseMatrix<Derived, T>& left, BaseMat
  */
 template<class Derived, class T>
 class BaseMatrix{
-private:
+protected:
 	Vector<Vector<T>> grid;
 	unsigned int size;
 public:
@@ -73,7 +73,7 @@ public:
 	 *	\post	Becomes an exact copy of other with the help of swap.
 	 *  \return calling object reference.
 	 */
-	BaseMatrix<Derived, T>& operator=(BaseMatrix other);
+	BaseMatrix<Derived, T>& operator=(const BaseMatrix<Derived, T>& other);
 
 	/**	Scalar multiplication assignment operator.
 	 *  \param 	scalar the value to multiply by.

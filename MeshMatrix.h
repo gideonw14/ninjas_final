@@ -4,9 +4,9 @@
 #include "BaseMatrix.h"
 
 template<class T>
-class MeshMatrix: public BaseMatrix<MeshMatrix, T>{
+class MeshMatrix: public BaseMatrix<MeshMatrix<T>, T>{
 public:
-	MeshMatrix(): size(0) {}
+	MeshMatrix() {size = 0;}
 };
 
 #include "MeshMatrix.hpp"

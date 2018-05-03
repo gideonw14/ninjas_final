@@ -14,54 +14,54 @@ BaseMatrix<Derived, T>::BaseMatrix(const unsigned int& new_size){
 
 template<class Derived, class T>
 BaseMatrix<Derived, T>::BaseMatrix(const BaseMatrix<Derived, T>& other){
-	size = other.size;
-	grid = other.grid;
+	*this = other;	
 }
 
 template<class Derived, class T>
-BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::operator=(BaseMatrix other){
-	swap(*this, other);
+BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::operator=(const BaseMatrix<Derived, T>& other){
+	size = other.size;
+	grid = other.grid;
 	return *this;
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::operator*=(const T& scalar){
-	return asDerived.operator*=(const T& scalar);
+	return *this = *this * scalar;
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::operator+=(const BaseMatrix<Derived, T>& other){
-	return asDerived.operator+=(const BaseMatrix<Derived, T>& other);
+	return *this = *this + other;
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::operator-=(const BaseMatrix<Derived, T>& other){
-	return asDerived.operator-=(const BaseMatrix<Derived, T>& other);
+	return *this = *this - other;
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::operator*(const T& scalar) const{
-	return asDerived.operator*(const T& scalar);
+	return asDerived.scalar_multiply(scalar);
 }
 
 template<class Derived, class T>
 Vector<T> BaseMatrix<Derived, T>::operator*(const Vector<T>& vector) const{
-	return asDerived.operator*(const Vector<T>& vector);
+	return asDerived.vector_mulitply(vector);
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::operator+(const BaseMatrix<Derived, T>& other) const{
-	return asDerived.operator+(const BaseMatrix<Derived, T>& other);
+	return asDerived.add(other);
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::operator-(const BaseMatrix<Derived, T>& other) const{
-	return asDerived.operator-(const BaseMatrix<Derived, T>& other);
+	return asDerived.subtract(other);
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::operator~() const{
-	return asDerived.operator~();
+	return asDerived.transpose();
 }
 
 template<class Derived, class T>
