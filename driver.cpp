@@ -64,6 +64,7 @@ void file_input(int argc, char* argv[], U& matrix, Vector<T>& vector){
 
 int main(int argc, char* argv[]){
 	cout << setprecision(PRECISION);
+	cout << argc << " " << argv[0] << endl;
 	try{
 		MeshMatrix<double> mesh();
 	}

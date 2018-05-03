@@ -1,2 +1,4 @@
-makefile
-Makefile
+depend
+driver
+*.o
+*.exe*

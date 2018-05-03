@@ -2,8 +2,8 @@
 #	Filename: 	makefile
 #	Programmer: Gideon Walker
 #	Class:		CS 5201 - Prof. Price
-#	Assignment: 6 - An Abstract Matrix Class and Derivatives
-#	Due: 		Wednesday, April 18, 2018
+#	Assignment: Final Project
+#	Due: 		
 #
 #	Description:
 #		A makefile to compile pretty much any C++ project.
@@ -11,7 +11,7 @@
 
 .PHONY: all clean
 
-CXX = /usr/bin/g++
+CXX = /bin/g++
 CXXFLAGS = -Wpedantic -Wall -Wextra -Wfloat-conversion -Werror -std=c++17
 
 SOURCES = $(wildcard *.cpp)

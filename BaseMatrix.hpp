@@ -7,15 +7,14 @@ template<class Derived, class T>
 BaseMatrix<Derived, T>::BaseMatrix(const unsigned int& new_size){
 	size = new_size;
 	grid.setSize(size);
-	for(int i=0; i<height; i++){
+	for(int i=0; i<size; i++){
 		grid[i].setSize(size);
 	}
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T>::BaseMatrix(const BaseMatrix<Derived, T>& other){
-	height = other.height;
-	width = other.width;
+	size = other.size;
 	grid = other.grid;
 }
 

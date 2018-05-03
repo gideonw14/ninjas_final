@@ -12,13 +12,19 @@
 #ifndef Matrix_h
 #define Matrix_h
 
+#include "mathvector.h"
+#include <iostream>
+#include <fstream>
+using std::ostream;
+using std::istream;
+using std::ifstream;
 
 // Keep your friends from backstabbing you.
-template<class T> class BaseMatrix;
-template<class T> ostream& operator<<(ostream& os, const BaseMatrix<Derived, T>& BaseMatrix);
-template<class T> ifstream& operator>>(ifstream& ifs, BaseMatrix<Derived, T>& BaseMatrix);
-template<class T> istream& operator>>(istream& is, BaseMatrix<Derived, T>& BaseMatrix);
-template<class T> void swap(BaseMatrix<Derived, T>& left, BaseMatrix<Derived, T>& right);
+template<class Derived, class T> class BaseMatrix;
+template<class Derived, class T> ostream& operator<<(ostream& os, const BaseMatrix<Derived, T>& BaseMatrix);
+template<class Derived, class T> ifstream& operator>>(ifstream& ifs, BaseMatrix<Derived, T>& BaseMatrix);
+template<class Derived, class T> istream& operator>>(istream& is, BaseMatrix<Derived, T>& BaseMatrix);
+template<class Derived, class T> void swap(BaseMatrix<Derived, T>& left, BaseMatrix<Derived, T>& right);
 
 /** The BaseMatrix class. Used to perform mathematical BaseMatrix operations.
  *  \pre =, +=, *=, -=, *, ==, >=, >>, << operators are implemented for T.
@@ -26,7 +32,7 @@ template<class T> void swap(BaseMatrix<Derived, T>& left, BaseMatrix<Derived, T>
 template<class Derived, class T>
 class BaseMatrix{
 private:
-	Vector<Vector<Derived, T>> grid;
+	Vector<Vector<T>> grid;
 	unsigned int size;
 public:
 	/** BaseMatrix default constructor.
@@ -105,7 +111,7 @@ public:
 	 *  \throws std::invalid_argument if vector size is not equal to the BaseMatrix
 	 *  width.
 	 */
-	Vector<Derived, T> operator*(const Vector<Derived, T>& vector) const;
+	Vector<T> operator*(const Vector<T>& vector) const;
 
 	/**	BaseMatrix scalar multiplication operator.
 	 *  \param  scalar the scalar to multiply by.
@@ -165,7 +171,7 @@ public:
 	 *	\pre	See set_height_width.
 	 *	\post	Calling object becomes a square BaseMatrix of new_size.
 	 */
-	void set_size(const unsigned int& new_size) { set_height_width(new_size, new_size); }
+	void set_size(const unsigned int& new_size);
 
 	/**	Getter function.
 	 *	\pre	None.
@@ -184,8 +190,8 @@ public:
 	 */
 	bool d_dom() const;
 
-	Derived<T>& asDerived(){ return static_cast<Derived<T>&>(*this); }
-	const Derived<T>& asDerived() const { return static_cast<Derived<T>&>(*this); }
+	Derived& asDerived(){ return static_cast<Derived&>(*this); }
+	const Derived& asDerived() const { return static_cast<Derived&>(*this); }
 
 	/**	Standard output stream operator.
 	 *  \param  os the output stream.
@@ -224,7 +230,7 @@ public:
 	friend void swap<Derived, T>(BaseMatrix& left, BaseMatrix& right);
 };	
 
-template<class T>
+template<class Derived, class T>
 ostream& operator<<(ostream& os, const BaseMatrix<Derived, T>& matrix){
 	for(unsigned int i=0; i<matrix.get_size(); i++){
 		if(i != matrix.get_size()){
@@ -237,7 +243,7 @@ ostream& operator<<(ostream& os, const BaseMatrix<Derived, T>& matrix){
 	return os;
 }
 
-template<class T>
+template<class Derived, class T>
 ifstream& operator>>(ifstream& ifs, BaseMatrix<Derived, T>& matrix){
 	for(unsigned int i=0; i<matrix.get_size(); i++){
 		if(!(ifs >> matrix.grid[i])){
@@ -248,7 +254,7 @@ ifstream& operator>>(ifstream& ifs, BaseMatrix<Derived, T>& matrix){
 	return ifs;
 }
 
-template<class T>
+template<class Derived, class T>
 istream& operator>>(istream& is, BaseMatrix<Derived, T>& matrix){
 	using std::cout;
 	using std::endl;
@@ -275,7 +281,7 @@ istream& operator>>(istream& is, BaseMatrix<Derived, T>& matrix){
 	return is;
 }
 
-template<class T>
+template<class Derived, class T>
 void swap(BaseMatrix<Derived, T>& left, BaseMatrix<Derived, T>& right){
 	using std::swap;
 	swap(left.grid, right.grid);
