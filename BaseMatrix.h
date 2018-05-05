@@ -195,6 +195,17 @@ public:
 
 	BaseMatrix<Derived, T>& add_assign(const BaseMatrix<Derived, T>& other);
 	BaseMatrix<Derived, T>& subtract_assign(const BaseMatrix<Derived, T>& other);
+	BaseMatrix<Derived, T>& multiply_assign(const BaseMatrix<Derived, T>& other);
+	Vector<T> vector_multiply(const Vector<T>& vector) const;
+	BaseMatrix<Derived, T> add(const BaseMatrix<Derived, T>& other) const;
+	BaseMatrix<Derived, T> subtract(const BaseMatrix<Derived, T>& other) const;
+	BaseMatrix<Derived, T> multiply(const BaseMatrix<Derived, T>& other) const;
+	BaseMatrix<Derived, T> scalar_multiply(const T& scalar) const;
+	BaseMatrix<Derived, T> transpose() const;
+	T& get_data(const unsigned int& height, const unsigned int& width);
+	const T& get_data(const unsigned int& height, const unsigned int& width) const;
+	bool d_dom_derived() const;
+	void set_size_derived(const unsigned int& new_size);
 
 	/**	Standard output stream operator.
 	 *  \param  os the output stream.
