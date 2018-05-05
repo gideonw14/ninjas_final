@@ -11,7 +11,7 @@
 
 .PHONY: all clean
 
-CXX = /bin/g++
+CXX = /usr/bin/g++
 CXXFLAGS = -Wpedantic -Wall -Wextra -Wfloat-conversion -Werror -std=c++17
 
 SOURCES = $(wildcard *.cpp)

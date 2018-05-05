@@ -6,7 +6,7 @@
 template<class T>
 class MeshMatrix: public BaseMatrix<MeshMatrix<T>, T>{
 public:
-	MeshMatrix() {size = 0;}
+	MeshMatrix() {this->size = 0;}
 };
 
 #include "MeshMatrix.hpp"
