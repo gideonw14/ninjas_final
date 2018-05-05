@@ -12,10 +12,10 @@ private:
 public:
 	MeshMatrix() {this->size = 0;}
 	MeshMatrix(const unsigned int& new_size, const unsigned int& partitions);
-	const T& operator()(const unsigned int& height, const unsigned int& width) const;
-	T operator()(const unsigned int& height, const unsigned int& width);
-	Vector<T> operator*(const Vector<T>& vector);
-	void set_size(const unsigned int& new_size);
+	const T& get_data(const unsigned int& height, const unsigned int& width) const;
+	T& get_data(const unsigned int& height, const unsigned int& width);
+	Vector<T> vector_multiply(const Vector<T>& vector) const;
+	void set_size_derived(const unsigned int& new_size);
 
 };
 

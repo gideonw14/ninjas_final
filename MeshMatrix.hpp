@@ -13,7 +13,7 @@ MeshMatrix<T>::MeshMatrix(const unsigned int& new_size, const unsigned int& new_
 }
 
 template<class T>
-T MeshMatrix<T>::operator()(const unsigned int& height, const unsigned int& width){
+T& MeshMatrix<T>::get_data(const unsigned int& height, const unsigned int& width){
 	if(height >= this->size || width >= this->size){
 		throw out_of_range("Height and/or width must be less than size!");
 	}
@@ -34,7 +34,7 @@ T MeshMatrix<T>::operator()(const unsigned int& height, const unsigned int& widt
 }
 
 template<class T>
-const T& MeshMatrix<T>::operator()(const unsigned int& height, const unsigned int& width) const{
+const T& MeshMatrix<T>::get_data(const unsigned int& height, const unsigned int& width) const{
 	if(height >= this->size || width >= this->size){
 		throw out_of_range("Height and/or width must be less than size!");
 	}
@@ -54,7 +54,7 @@ const T& MeshMatrix<T>::operator()(const unsigned int& height, const unsigned in
 }
 
 template<class T>
-Vector<T> MeshMatrix<T>::operator*(const Vector<T>& vector){
+Vector<T> MeshMatrix<T>::vector_multiply(const Vector<T>& vector) const{
 	if(this->size != vector.getSize()){
 		throw invalid_argument("Vector size must equal BandedMatrix width!");
 	}
@@ -85,7 +85,7 @@ Vector<T> MeshMatrix<T>::operator*(const Vector<T>& vector){
 }
 
 template<class T>
-void MeshMatrix<T>::set_size(const unsigned int& new_size){
+void MeshMatrix<T>::set_size_derived(const unsigned int& new_size){
 	this->size = new_size;
 	this->grid[0][DIAGONAL] = 1;
 	this->grid[0][PARTITION] = static_cast<T>(-1)/partitions;
