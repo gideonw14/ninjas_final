@@ -1,8 +1,3 @@
-// template<class Derived, class T>
-// BaseMatrix<Derived, T>::BaseMatrix(const int new_size){
-// 	(*this) = BaseMatrix<Derived, T>(new_size, new_size);
-// }
-
 template<class Derived, class T>
 BaseMatrix<Derived, T>::BaseMatrix(const unsigned int& new_size){
 	size = new_size;
@@ -41,46 +36,55 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::operator-=(const BaseMatrix<Deri
 
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::operator*(const T& scalar) const{
-	return asDerived.scalar_multiply(scalar);
+	return asDerived().operator*(scalar);
 }
 
 template<class Derived, class T>
 Vector<T> BaseMatrix<Derived, T>::operator*(const Vector<T>& vector) const{
-	return asDerived.vector_mulitply(vector);
+	return asDerived().operator*(vector);
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::operator+(const BaseMatrix<Derived, T>& other) const{
-	return asDerived.add(other);
+	return asDerived().operator+(other);
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::operator-(const BaseMatrix<Derived, T>& other) const{
-	return asDerived.subtract(other);
+	return asDerived().operator-(other);
 }
 
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::operator~() const{
-	return asDerived.transpose();
+	return asDerived().operator~();
 }
 
 template<class Derived, class T>
 T& BaseMatrix<Derived, T>::operator()(const unsigned int& height, const unsigned int& width){
-	return asDerived.operator()(height, width);
+	return asDerived().operator()(height, width);
 }
 
 template<class Derived, class T>
 const T& BaseMatrix<Derived, T>::operator()(const unsigned int& height, const unsigned int& width) const{
-	return asDerived.operator()(height, width);
+	return asDerived().operator()(height, width);
 }
 
 
 template<class Derived, class T>
 void BaseMatrix<Derived, T>::set_size(const unsigned int& new_size){
-	return asDerived.set_size(new_size);
+	return asDerived().set_size(new_size);
 }
 
 template<class Derived, class T>
 bool BaseMatrix<Derived, T>::d_dom() const{
-	return asDerived.d_dom();
+	return asDerived().d_dom();
+}
+
+template<class Derived, class T>
+BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::add_assign(const BaseMatrix<Derived, T>& other){
+	if(other.size != size){
+		throw invalid_argument("Sizes must match for addition!");
+	}
+	grid += other.grid;	
+	return *this;
 }

@@ -47,10 +47,10 @@ void file_input(int argc, char* argv[], U& matrix, Vector<T>& vector){
 		cout << "First line of input file must be an integer. (no extra spaces)" << endl;
 		exit(1);
 	}
-	
+		
 	try{
 		matrix.set_size(size);
-		vector.set_size(size);
+		vector.setSize(size);
 		input_file >> matrix;
 		input_file >> vector;
 	}
@@ -66,7 +66,14 @@ int main(int argc, char* argv[]){
 	cout << setprecision(PRECISION);
 	cout << argc << " " << argv[0] << endl;
 	try{
-		MeshMatrix<double> mesh();
+		MeshMatrix<double> mesh(5, 4);
+		Vector<double> vec(5);
+		for(int i=0; i<5; i++){
+			vec[i] = i;
+		}
+		cout << mesh << endl;
+		cout << vec << endl;
+		cout << mesh * vec << endl;
 	}
 	catch(const exception& e){
 		cerr << e.what() << endl;
