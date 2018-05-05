@@ -15,9 +15,7 @@
 #include "mathvector.h"
 #include <iostream>
 #include <fstream>
-using std::ostream;
-using std::istream;
-using std::ifstream;
+#include <stdexcept>
 
 // Keep your friends from backstabbing you.
 template<class Derived, class T> class BaseMatrix;
@@ -31,7 +29,7 @@ template<class Derived, class T> void swap(BaseMatrix<Derived, T>& left, BaseMat
  */
 template<class Derived, class T>
 class BaseMatrix{
-private:
+protected:
 	Vector<Vector<T>> grid;
 	unsigned int size;
 public:
@@ -73,7 +71,7 @@ public:
 	 *	\post	Becomes an exact copy of other with the help of swap.
 	 *  \return calling object reference.
 	 */
-	BaseMatrix<Derived, T>& operator=(BaseMatrix other);
+	BaseMatrix<Derived, T>& operator=(const BaseMatrix<Derived, T>& other);
 
 	/**	Scalar multiplication assignment operator.
 	 *  \param 	scalar the value to multiply by.
@@ -191,7 +189,23 @@ public:
 	bool d_dom() const;
 
 	Derived& asDerived(){ return static_cast<Derived&>(*this); }
-	const Derived& asDerived() const { return static_cast<Derived&>(*this); }
+	const Derived& asDerived() const { return static_cast<const Derived&>(*this); }
+
+	BaseMatrix<Derived, T>& scalar_multiply_assign(const T& scalar){grid*=scalar; return *this;}
+
+	BaseMatrix<Derived, T>& add_assign(const BaseMatrix<Derived, T>& other);
+	BaseMatrix<Derived, T>& subtract_assign(const BaseMatrix<Derived, T>& other);
+	BaseMatrix<Derived, T>& multiply_assign(const BaseMatrix<Derived, T>& other);
+	Vector<T> vector_multiply(const Vector<T>& vector) const;
+	BaseMatrix<Derived, T> add(const BaseMatrix<Derived, T>& other) const;
+	BaseMatrix<Derived, T> subtract(const BaseMatrix<Derived, T>& other) const;
+	BaseMatrix<Derived, T> multiply(const BaseMatrix<Derived, T>& other) const;
+	BaseMatrix<Derived, T> scalar_multiply(const T& scalar) const;
+	BaseMatrix<Derived, T> transpose() const;
+	T& get_data(const unsigned int& height, const unsigned int& width);
+	const T& get_data(const unsigned int& height, const unsigned int& width) const;
+	bool d_dom_derived() const;
+	void set_size_derived(const unsigned int& new_size);
 
 	/**	Standard output stream operator.
 	 *  \param  os the output stream.
@@ -200,7 +214,7 @@ public:
 	 *	\post	The BaseMatrix is nicely output to os.
 	 *  \return os. 
 	 */
-	friend ostream& operator<<<T>(ostream& os, const BaseMatrix& BaseMatrix);
+	friend ostream& operator<<<Derived, T>(ostream& os, const BaseMatrix& BaseMatrix);
 
 	/**	File input stream operator.
 	 *  \param 	ifs the input file stream.
@@ -210,7 +224,7 @@ public:
 	 *  \throws std::invalid_argument if there is an error while reading in.
 	 *  \return ifs.
 	 */
-	friend ifstream& operator>><T>(ifstream& ifs, BaseMatrix& BaseMatrix);
+	friend ifstream& operator>><Derived, T>(ifstream& ifs, BaseMatrix& BaseMatrix);
 
 	/**	Standard input stream operator.
 	 *  \param 	is the input stream.
@@ -219,7 +233,7 @@ public:
 	 *	\post	The BaseMatrix is filled with user input.
 	 *  \return is. 
 	 */
-	friend istream& operator>><T>(istream& is, BaseMatrix& BaseMatrix);
+	friend istream& operator>><Derived, T>(istream& is, BaseMatrix& BaseMatrix);
 
 	/**	Swap function.
 	 *  \param 	left the left BaseMatrix.
@@ -233,12 +247,10 @@ public:
 template<class Derived, class T>
 ostream& operator<<(ostream& os, const BaseMatrix<Derived, T>& matrix){
 	for(unsigned int i=0; i<matrix.get_size(); i++){
-		if(i != matrix.get_size()){
-			os << matrix.grid[i] << "\n";
+		for(unsigned int j=0; j<matrix.get_size(); j++){
+			os << matrix(i, j) << " ";
 		}
-		else{
-			os << matrix.grid[i];
-		}
+		os << "\n";
 	}
 	return os;
 }
@@ -246,39 +258,12 @@ ostream& operator<<(ostream& os, const BaseMatrix<Derived, T>& matrix){
 template<class Derived, class T>
 ifstream& operator>>(ifstream& ifs, BaseMatrix<Derived, T>& matrix){
 	for(unsigned int i=0; i<matrix.get_size(); i++){
-		if(!(ifs >> matrix.grid[i])){
-			throw std::invalid_argument("Failed to read in full BaseMatrix.");
+		for(unsigned int j=0; j<matrix.get_size(); j++){
+			if(!(ifs >> matrix(i, j)))
+				throw std::invalid_argument("Failed to read in full BaseMatrix.");
 		}
 	}
-
 	return ifs;
-}
-
-template<class Derived, class T>
-istream& operator>>(istream& is, BaseMatrix<Derived, T>& matrix){
-	using std::cout;
-	using std::endl;
-	unsigned int new_height = 0;
-	unsigned int new_width = 0;
-	cout << "Enter matrix height (m): ";
-	is >> new_height;
-	cout << "Enter matrix width (n): ";
-	is >> new_width;
-	while(new_height < 0 || new_width < 0){
-		cout << "Height and width must be non-negative." << endl;
-		cout << "Enter matrix height (m): ";
-		is >> new_height;
-		cout << "Enter matrix width (n): ";
-		is >> new_width;
-	}
-	matrix.set_height_width(new_height, new_width);
-	for(unsigned int i=0; i<matrix.height; i++){
-		for(unsigned int j=0; j<matrix.width; j++){
-			cout <<"Position " << i << " " << j <<": ";
-			is >> matrix.grid[i][j];
-		}
-	}
-	return is;
 }
 
 template<class Derived, class T>
