@@ -54,7 +54,7 @@ const T& MeshMatrix<T>::operator()(const unsigned int& height, const unsigned in
 }
 
 template<class T>
-Vector<T> MeshMatrix<T>::operator*(const Vector<T>& vector){
+Vector<T> MeshMatrix<T>::operator*(const Vector<T>& vector) const{
 	if(this->size != vector.getSize()){
 		throw invalid_argument("Vector size must equal BandedMatrix width!");
 	}

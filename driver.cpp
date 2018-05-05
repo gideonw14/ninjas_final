@@ -11,6 +11,7 @@
 
 #include "BaseMatrix.h"
 #include "MeshMatrix.h"
+#include "GuassSiedel.h"
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -66,14 +67,18 @@ int main(int argc, char* argv[]){
 	cout << setprecision(PRECISION);
 	cout << argc << " " << argv[0] << endl;
 	try{
-		MeshMatrix<double> mesh(5, 4);
+		BaseMatrix<MeshMatrix<double>, double> *mesh = new MeshMatrix<double>(5, 4);
 		Vector<double> vec(5);
 		for(int i=0; i<5; i++){
 			vec[i] = i;
 		}
-		cout << mesh << endl;
+		cout << *mesh << endl;
 		cout << vec << endl;
-		cout << mesh * vec << endl;
+		cout << *mesh * vec << endl;
+		
+		GuassSiedel<MeshMatrix<double>, double> guass;
+		
+		cout << guass(*mesh, vec) << endl;
 	}
 	catch(const exception& e){
 		cerr << e.what() << endl;
