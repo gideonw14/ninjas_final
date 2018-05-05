@@ -16,6 +16,17 @@ public:
 	T& get_data(const unsigned int& height, const unsigned int& width);
 	Vector<T> vector_multiply(const Vector<T>& vector) const;
 	void set_size_derived(const unsigned int& new_size);
+	MeshMatrix<T>& scalar_multiply_assign(const T& scalar);
+	MeshMatrix<T>& add_assign(const MeshMatrix<T>& other);
+	MeshMatrix<T>& subtract_assign(const MeshMatrix<T>& other);
+	// multiply_assign inherited
+
+	/* These might work as inherited
+	MeshMatrix<T> scalar_multiply(const T& scalar);
+	MeshMatrix<T> add(const MeshMatrix<T>& other);
+	MeshMatrix<T> subtract(const MeshMatrix<T>& other);
+	*/
+
 };
 
 #include "MeshMatrix.hpp"

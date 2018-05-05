@@ -11,10 +11,10 @@ class GeneralMatrix: public BaseMatrix<GeneralMatrix<T>, T>{
 public:
 	GeneralMatrix() {this->size(0);}
 	GeneralMatrix(const unsigned int& new_size){
-		size = new_size;
-		grid.setSize(new_size);
-		for(int i=0; i<size; i++){
-			grid[i].setSize(new_size);
+		this->size = new_size;
+		this->grid.setSize(new_size);
+		for(unsigned int i=0; i<this->size; i++){
+			this->grid[i].setSize(new_size);
 		}
 	}
 	GeneralMatrix(const GeneralMatrix<T>& other){
@@ -24,8 +24,8 @@ public:
 		swap(*this, other);
 	}
 	GeneralMatrix<T>& operator=(const GeneralMatrix<T>& other){
-		grid = other.grid;
-		size = other.size;
+		this->grid = other.grid;
+		this->size = other.size;
 		return *this;
 	}
 	friend void swap<T>(GeneralMatrix& left, GeneralMatrix& right);

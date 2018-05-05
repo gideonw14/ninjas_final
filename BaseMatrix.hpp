@@ -108,10 +108,10 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::multiply_assign(const BaseMatrix
 	for(int i=0; i<size; i++){
 		for(int j=0; j<size; j++){
 			for(int k=0; k<other.size; k++){
-				product = grid[i][k] * other.grid[k][j];
+				product = (*this)(i, k) * other(k, j);
 				k==0 ? sum = product : sum += product;
 			}
-			grid[i][j] = sum;	
+			(*this)(i, j) = sum;	
 		}
 	}
 	return *this;
@@ -127,7 +127,7 @@ Vector<T> BaseMatrix<Derived, T>::vector_multiply(const Vector<T>& vector) const
 	T product;
 	for(int h=0; h<size; h++){
 		for(int w=0; w<size; w++){
-			product = grid[h][w] * vector[w];
+			product = (*this)(h, w) * vector[w];
 			w==0 ? sum = product : sum += product;
 		}
 		result_vector[h] = sum;
@@ -164,7 +164,7 @@ BaseMatrix<Derived, T> BaseMatrix<Derived, T>::transpose() const{
 	BaseMatrix<Derived, T> transpose(size);
 	for(int i=0; i<size; i++){
 		for(int j=0; j<size; j++){
-			transpose.grid[j][i] = grid[i][j];
+			transpose(j, i) = (*this)(i, j);
 		}
 	}
 	return transpose;
@@ -188,16 +188,16 @@ bool BaseMatrix<Derived, T>::d_dom_derived() const{
 		sum = 0;
 		for(int j=0; j<size; j++){
 			if(i == j){
-				diagonal = fabs(grid[i][j]);
+				diagonal = fabs((*this)(i, j));
 			}
 			else{
 				if(j > i){
 					// Return false if not symmetric.
-					if(grid[i][j] != grid[j][i]){
+					if((*this)(i, j) != (*this)(j, i)){
 						return false;
 					}
 				}
-				sum += fabs(grid[i][j]);
+				sum += fabs((*this)(i, j));
 			}
 		}
 		// Return false if diagonal is not greater than sum of other elements.

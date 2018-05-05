@@ -91,3 +91,24 @@ void MeshMatrix<T>::set_size_derived(const unsigned int& new_size){
 	this->grid[0][PARTITION] = static_cast<T>(-1)/partitions;
 	this->grid[0][ZERO] = 0;
 }
+
+template<class T>
+MeshMatrix<T>& MeshMatrix<T>::scalar_multiply_assign(const T& scalar){
+	this->grid[0][DIAGONAL] *= scalar;
+	this->grid[0][PARTITION] *= scalar;
+	return *this;
+}
+
+template<class T>
+MeshMatrix<T>& MeshMatrix<T>::add_assign(const MeshMatrix<T>& other){
+	this->grid[0][DIAGONAL] += other.grid[0][DIAGONAL];
+	this->grid[0][PARTITION] += other.grid[0][PARTITION];
+	return *this;
+}
+
+template<class T>
+MeshMatrix<T>& MeshMatrix<T>::subtract_assign(const MeshMatrix<T>& other){
+	this->grid[0][DIAGONAL] -= other.grid[0][DIAGONAL];
+	this->grid[0][PARTITION] -= other.grid[0][PARTITION];
+	return *this;
+}

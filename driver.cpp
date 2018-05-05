@@ -11,6 +11,7 @@
 
 #include "BaseMatrix.h"
 #include "MeshMatrix.h"
+#include "GeneralMatrix.h"
 #include "GuassSiedel.h"
 #include <iostream>
 #include <string>
@@ -68,13 +69,16 @@ int main(int argc, char* argv[]){
 	cout << argc << " " << argv[0] << endl;
 	try{
 		BaseMatrix<MeshMatrix<double>, double> *mesh = new MeshMatrix<double>(5, 4);
+		BaseMatrix<GeneralMatrix<double>, double> *general = new GeneralMatrix<double>(4);
 		Vector<double> vec(5);
+
 		for(int i=0; i<5; i++){
 			vec[i] = i;
 		}
+		file_input(*general, vec);
 		cout << *mesh << endl;
 		cout << vec << endl;
-		cout << *mesh * vec << endl;
+		cout << *mesh - *mesh << endl;
 		
 		GuassSiedel<MeshMatrix<double>, double> guass;
 		
