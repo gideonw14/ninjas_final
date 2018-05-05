@@ -1,8 +1,3 @@
-// template<class Derived, class T>
-// BaseMatrix<Derived, T>::BaseMatrix(const int new_size){
-// 	(*this) = BaseMatrix<Derived, T>(new_size, new_size);
-// }
-
 template<class Derived, class T>
 BaseMatrix<Derived, T>::BaseMatrix(const unsigned int& new_size){
 	size = new_size;
