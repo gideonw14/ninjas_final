@@ -1,58 +1,80 @@
+//*****************************************************************************
+// Programmers: Charles Gaitley and Gideon Walker	Due Date: 05/06/2018
+// Class: CS 5201									Section: A
+// File: MeshMatrix.hpp
+// Description: This file contains function implementations for the MeshMatrix
+//              class.
+//*****************************************************************************
+
+// Set constant class member.
 template<class T>
 const T MeshMatrix<T>::zero = 0;
 
+// Assignment operator (=) implementation.
 template<class T>
-MeshMatrix<T>::MeshMatrix(const unsigned int& new_size, const unsigned int& new_partitions){
-	partitions = new_partitions;
-	this->size = new_size;
-	this->grid.setSize(1);
-	this->grid[0].setSize(3);
-	this->grid[0][DIAGONAL] = 1;
-	this->grid[0][PARTITION] = static_cast<T>(-1)/4;
-	this->grid[0][ZERO] = 0;
+MeshMatrix<T>& MeshMatrix<T>::equal(const MeshMatrix<T>& other){
+	partitions = other.partitions;
+	BaseMatrix<MeshMatrix<T>, T>::operator=(other);
+	return *this;
 }
 
+// Parentheses operator () implementation for read-and-write access.
 template<class T>
 T& MeshMatrix<T>::get_data(const unsigned int& height, const unsigned int& width){
-	if(height >= this->size || width >= this->size){
+	// Check for emptiness of out of bounds.
+	if(this -> is_empty() || height >= this->size || width >= this->size){
 		throw out_of_range("Height and/or width must be less than size!");
 	}
+	
 	this->grid[0][ZERO] = zero;
+	
+	// Diagonal Data.
 	if(height == width){
 		return this->grid[0][DIAGONAL];
 	}
+	// Upper Special Band 1.
 	else if(height + 1 == width){
 		return width % (partitions - 1) == 0 ? this->grid[0][ZERO] : this->grid[0][PARTITION];
 	}
+	// Lower Special Band 1.
 	else if(width + 1 == height){
 		return height % (partitions - 1) == 0 ? this->grid[0][ZERO] : this->grid[0][PARTITION];
 	}
+	// Other Special Bands.
 	else if(height + partitions - 1 == width || width + partitions - 1 == height){
 		return this->grid[0][PARTITION];
 	}
 	return this->grid[0][ZERO];
 }
 
+// Parentheses operator () implementation for read-only access.
 template<class T>
 const T& MeshMatrix<T>::get_data(const unsigned int& height, const unsigned int& width) const{
-	if(height >= this->size || width >= this->size){
+	// Check for emptiness of out of bounds.
+	if(this -> is_empty() || height >= this->size || width >= this->size){
 		throw out_of_range("Height and/or width must be less than size!");
 	}
+	
+	// Diagonal Data.
 	if(height == width){
 		return this->grid[0][DIAGONAL];
 	}
+	// Upper Special Band 1.
 	else if(height + 1 == width){
 		return width % (partitions - 1) == 0 ? zero : this->grid[0][PARTITION];
 	}
+	// Lower Special Band 1.
 	else if(width + 1 == height){
 		return height % (partitions - 1) == 0 ? zero : this->grid[0][PARTITION];
 	}
+	// Other Special Bands.
 	else if(height + partitions - 1 == width || width + partitions - 1 == height){
 		return this->grid[0][PARTITION];
 	}
 	return zero;
 }
 
+// Binary operator * implementation for Vector multiplication.
 template<class T>
 Vector<T> MeshMatrix<T>::vector_multiply(const Vector<T>& vector) const{
 	if(this->size != vector.getSize()){
@@ -93,6 +115,6 @@ void MeshMatrix<T>::set_size_derived(const unsigned int& new_size){
 }
 
 template<class T>
-bool MeshMatrix<T>::d_dom_derived() const{
+bool MeshMatrix<T>::p_def_derived() const{
 	return (4 * fabs(this->grid[0][PARTITION]) <= this->grid[0][DIAGONAL]);
 }

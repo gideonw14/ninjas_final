@@ -47,7 +47,7 @@ class SteepestDescent
     Vector<T> operator ()(const BaseMatrix<Derived, T> &a_matrix, const Vector<T> &b_vector)
     {
       // Check that a_matrix is positive definite.
-      if (!a_matrix.d_dom()){
+      if (!a_matrix.p_def()){
         throw domain_error(WRONG_FORM);
       }
 
