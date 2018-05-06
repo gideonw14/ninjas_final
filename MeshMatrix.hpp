@@ -8,7 +8,7 @@ MeshMatrix<T>::MeshMatrix(const unsigned int& new_size, const unsigned int& new_
 	this->grid.setSize(1);
 	this->grid[0].setSize(3);
 	this->grid[0][DIAGONAL] = 1;
-	this->grid[0][PARTITION] = static_cast<T>(-1)/partitions;
+	this->grid[0][PARTITION] = static_cast<T>(-1)/4;
 	this->grid[0][ZERO] = 0;
 }
 
@@ -22,12 +22,12 @@ T& MeshMatrix<T>::get_data(const unsigned int& height, const unsigned int& width
 		return this->grid[0][DIAGONAL];
 	}
 	else if(height + 1 == width){
-		return width % 3 == 0 ? this->grid[0][ZERO] : this->grid[0][PARTITION];
+		return width % (partitions - 1) == 0 ? this->grid[0][ZERO] : this->grid[0][PARTITION];
 	}
 	else if(width + 1 == height){
-		return height % 3 == 0 ? this->grid[0][ZERO] : this->grid[0][PARTITION];
+		return height % (partitions - 1) == 0 ? this->grid[0][ZERO] : this->grid[0][PARTITION];
 	}
-	else if(height + 3 == width || width + 3 == height){
+	else if(height + partitions - 1 == width || width + partitions - 1 == height){
 		return this->grid[0][PARTITION];
 	}
 	return this->grid[0][ZERO];
@@ -42,12 +42,12 @@ const T& MeshMatrix<T>::get_data(const unsigned int& height, const unsigned int&
 		return this->grid[0][DIAGONAL];
 	}
 	else if(height + 1 == width){
-		return width % 3 == 0 ? zero : this->grid[0][PARTITION];
+		return width % (partitions - 1) == 0 ? zero : this->grid[0][PARTITION];
 	}
 	else if(width + 1 == height){
-		return height % 3 == 0 ? zero : this->grid[0][PARTITION];
+		return height % (partitions - 1) == 0 ? zero : this->grid[0][PARTITION];
 	}
-	else if(height + 3 == width || width + 3 == height){
+	else if(height + partitions - 1 == width || width + partitions - 1 == height){
 		return this->grid[0][PARTITION];
 	}
 	return zero;
@@ -64,22 +64,22 @@ Vector<T> MeshMatrix<T>::vector_multiply(const Vector<T>& vector) const{
 	//First Upper band
 	for (unsigned int i=0; i<this->size-1; i++)
 	{
-		result_vector[i+1] += vector[i] * (*this)(i, i+1);
+		result_vector[i] += vector[i+1] * (*this)(i, i+1);
 	}
 	//First Lower Band
 	for (unsigned int i=1; i<this->size; i++)
 	{
-		result_vector[i-1] += vector[i] * (*this)(i, i-1);
+		result_vector[i] += vector[i-1] * (*this)(i, i-1);
 	}
 	//Second Upper Band
-	for (unsigned int i=0; i<this->size-3; i++)
+	for (unsigned int i=0; i<this->size-partitions+1; i++)
 	{
-		result_vector[i+3] += vector[i] * (*this)(i, i+3);
+		result_vector[i] += vector[i+partitions-1] * (*this)(i, i+partitions-1);
 	}
 	//Second Lower Band
-	for (unsigned int i=3; i<this->size; i++)
+	for (unsigned int i=partitions-1; i<this->size; i++)
 	{
-		result_vector[i-3] += vector[i] * (*this)(i, i-3);
+		result_vector[i] += vector[i-partitions+1] * (*this)(i, i-partitions+1);
 	}
 	return result_vector;
 }
@@ -88,27 +88,11 @@ template<class T>
 void MeshMatrix<T>::set_size_derived(const unsigned int& new_size){
 	this->size = new_size;
 	this->grid[0][DIAGONAL] = 1;
-	this->grid[0][PARTITION] = static_cast<T>(-1)/partitions;
+	this->grid[0][PARTITION] = static_cast<T>(-1)/4;
 	this->grid[0][ZERO] = 0;
 }
 
 template<class T>
-MeshMatrix<T>& MeshMatrix<T>::scalar_multiply_assign(const T& scalar){
-	this->grid[0][DIAGONAL] *= scalar;
-	this->grid[0][PARTITION] *= scalar;
-	return *this;
-}
-
-template<class T>
-MeshMatrix<T>& MeshMatrix<T>::add_assign(const MeshMatrix<T>& other){
-	this->grid[0][DIAGONAL] += other.grid[0][DIAGONAL];
-	this->grid[0][PARTITION] += other.grid[0][PARTITION];
-	return *this;
-}
-
-template<class T>
-MeshMatrix<T>& MeshMatrix<T>::subtract_assign(const MeshMatrix<T>& other){
-	this->grid[0][DIAGONAL] -= other.grid[0][DIAGONAL];
-	this->grid[0][PARTITION] -= other.grid[0][PARTITION];
-	return *this;
+bool MeshMatrix<T>::d_dom_derived() const{
+	return (4 * fabs(this->grid[0][PARTITION]) <= this->grid[0][DIAGONAL]);
 }

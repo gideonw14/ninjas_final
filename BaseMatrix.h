@@ -13,12 +13,14 @@
 #define Matrix_h
 
 #include "mathvector.h"
+#include "GeneralMatrix.h"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 
 // Keep your friends from backstabbing you.
 template<class Derived, class T> class BaseMatrix;
+template<class T> class GeneralMatrix;
 template<class Derived, class T> ostream& operator<<(ostream& os, const BaseMatrix<Derived, T>& BaseMatrix);
 template<class Derived, class T> ifstream& operator>>(ifstream& ifs, BaseMatrix<Derived, T>& BaseMatrix);
 template<class Derived, class T> istream& operator>>(istream& is, BaseMatrix<Derived, T>& BaseMatrix);
@@ -29,6 +31,8 @@ template<class Derived, class T> void swap(BaseMatrix<Derived, T>& left, BaseMat
  */
 template<class Derived, class T>
 class BaseMatrix{
+private:
+	BaseMatrix<GeneralMatrix<T>, T> convert_to_general(const BaseMatrix<Derived, T>& other) const;
 protected:
 	Vector<Vector<T>> grid;
 	unsigned int size;
@@ -119,6 +123,8 @@ public:
 	 */
 	BaseMatrix<Derived, T> operator*(const T& scalar) const;
 
+	BaseMatrix<GeneralMatrix<T>, T> operator*(const BaseMatrix<Derived, T>& other) const;
+
 	/**	BaseMatrix addition operator.
 	 *  \param  other the BaseMatrix to add to calling object. 
 	 *	\pre	None.
@@ -195,17 +201,17 @@ public:
 
 	BaseMatrix<Derived, T>& add_assign(const BaseMatrix<Derived, T>& other);
 	BaseMatrix<Derived, T>& subtract_assign(const BaseMatrix<Derived, T>& other);
-	BaseMatrix<Derived, T>& multiply_assign(const BaseMatrix<Derived, T>& other);
 	Vector<T> vector_multiply(const Vector<T>& vector) const;
 	BaseMatrix<Derived, T> add(const BaseMatrix<Derived, T>& other) const;
 	BaseMatrix<Derived, T> subtract(const BaseMatrix<Derived, T>& other) const;
-	BaseMatrix<Derived, T> multiply(const BaseMatrix<Derived, T>& other) const;
+	BaseMatrix<GeneralMatrix<T>, T> multiply(const BaseMatrix<Derived, T>& other) const;
 	BaseMatrix<Derived, T> scalar_multiply(const T& scalar) const;
 	BaseMatrix<Derived, T> transpose() const;
 	T& get_data(const unsigned int& height, const unsigned int& width);
 	const T& get_data(const unsigned int& height, const unsigned int& width) const;
 	bool d_dom_derived() const;
 	void set_size_derived(const unsigned int& new_size);
+	
 
 	/**	Standard output stream operator.
 	 *  \param  os the output stream.

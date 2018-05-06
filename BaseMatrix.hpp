@@ -1,8 +1,19 @@
 template<class Derived, class T>
+BaseMatrix<GeneralMatrix<T>, T> BaseMatrix<Derived, T>::convert_to_general(const BaseMatrix<Derived, T>& other) const{
+	BaseMatrix<GeneralMatrix<T>, T> general(size);
+	for(unsigned int i=0; i<size; i++){
+		for(unsigned int j=0; j<size; j++){
+			general(i, j) = other(i, j);
+		}
+	}
+	return general;
+}
+
+template<class Derived, class T>
 BaseMatrix<Derived, T>::BaseMatrix(const unsigned int& new_size){
 	size = new_size;
 	grid.setSize(size);
-	for(int i=0; i<size; i++){
+	for(unsigned int i=0; i<size; i++){
 		grid[i].setSize(size);
 	}
 }
@@ -37,6 +48,11 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::operator-=(const BaseMatrix<Deri
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::operator*(const T& scalar) const{
 	return asDerived().scalar_multiply(scalar);
+}
+
+template<class Derived, class T>
+BaseMatrix<GeneralMatrix<T>, T> BaseMatrix<Derived, T>::operator*(const BaseMatrix<Derived, T>& other) const{
+	return asDerived().multiply(other);
 }
 
 template<class Derived, class T>
@@ -99,25 +115,6 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::subtract_assign(const BaseMatrix
 }
 
 template<class Derived, class T>
-BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::multiply_assign(const BaseMatrix<Derived, T>& other){
-	if(size != other.size){
-		throw invalid_argument("Width must match height of other Matrix!");
-	}
-	T product;
-	T sum;
-	for(int i=0; i<size; i++){
-		for(int j=0; j<size; j++){
-			for(int k=0; k<other.size; k++){
-				product = (*this)(i, k) * other(k, j);
-				k==0 ? sum = product : sum += product;
-			}
-			(*this)(i, j) = sum;	
-		}
-	}
-	return *this;
-}
-
-template<class Derived, class T>
 Vector<T> BaseMatrix<Derived, T>::vector_multiply(const Vector<T>& vector) const{
 	if(size != vector.get_size()){
 		throw invalid_argument("Vector size must equal Matrix size!");
@@ -125,8 +122,8 @@ Vector<T> BaseMatrix<Derived, T>::vector_multiply(const Vector<T>& vector) const
 	Vector<T> result_vector(size);
 	T sum;
 	T product;
-	for(int h=0; h<size; h++){
-		for(int w=0; w<size; w++){
+	for(unsigned int h=0; h<size; h++){
+		for(unsigned int w=0; w<size; w++){
 			product = (*this)(h, w) * vector[w];
 			w==0 ? sum = product : sum += product;
 		}
@@ -148,9 +145,23 @@ BaseMatrix<Derived, T> BaseMatrix<Derived, T>::subtract(const BaseMatrix<Derived
 }
 
 template<class Derived, class T>
-BaseMatrix<Derived, T> BaseMatrix<Derived, T>::multiply(const BaseMatrix<Derived, T>& other) const{
-	BaseMatrix<Derived, T> temp(*this);
-	return temp *= other;
+BaseMatrix<GeneralMatrix<T>, T> BaseMatrix<Derived, T>::multiply(const BaseMatrix<Derived, T>& other) const{
+	if(size != other.size){
+		throw invalid_argument("Width must match height of other Matrix!");
+	}
+	BaseMatrix<GeneralMatrix<T>, T> temp = convert_to_general(*this);
+	T product;
+	T sum;
+	for(unsigned int i=0; i<size; i++){
+		for(unsigned int j=0; j<size; j++){
+			for(unsigned int k=0; k<size; k++){
+				product = (*this)(i, k) * other(k, j);
+				k==0 ? sum = product : sum += product;
+			}
+			temp(i, j) = sum;	
+		}
+	}
+	return temp;
 }
 
 template<class Derived, class T>
@@ -162,8 +173,8 @@ BaseMatrix<Derived, T> BaseMatrix<Derived, T>::scalar_multiply(const T& scalar) 
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::transpose() const{
 	BaseMatrix<Derived, T> transpose(size);
-	for(int i=0; i<size; i++){
-		for(int j=0; j<size; j++){
+	for(unsigned int i=0; i<size; i++){
+		for(unsigned int j=0; j<size; j++){
 			transpose(j, i) = (*this)(i, j);
 		}
 	}
@@ -184,9 +195,9 @@ template<class Derived, class T>
 bool BaseMatrix<Derived, T>::d_dom_derived() const{
 	T diagonal;
 	T sum;
-	for(int i=0; i<size; i++){
+	for(unsigned int i=0; i<size; i++){
 		sum = 0;
-		for(int j=0; j<size; j++){
+		for(unsigned int j=0; j<size; j++){
 			if(i == j){
 				diagonal = fabs((*this)(i, j));
 			}
@@ -201,7 +212,7 @@ bool BaseMatrix<Derived, T>::d_dom_derived() const{
 			}
 		}
 		// Return false if diagonal is not greater than sum of other elements.
-		if(sum >= diagonal){
+		if(sum > diagonal){
 			return false;
 		}
 	}
@@ -212,7 +223,7 @@ template<class Derived, class T>
 void BaseMatrix<Derived, T>::set_size_derived(const unsigned int& new_size){
 	size = new_size;
 	grid.setSize(size);
-	for(int i=0; i<size; i++){
+	for(unsigned int i=0; i<size; i++){
 		grid[i].setSize(size);
 	}
 	return;

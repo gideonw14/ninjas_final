@@ -3,6 +3,7 @@
 
 #include "BaseMatrix.h"
 
+template<class Derived, class T> class BaseMatrix;
 template<class T> class GeneralMatrix;
 template<class T> void swap(GeneralMatrix<T>& left, GeneralMatrix<T>& right);
 

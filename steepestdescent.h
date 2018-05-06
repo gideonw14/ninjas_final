@@ -9,7 +9,7 @@
 #ifndef STEEPESTDESCENT_H
 #define STEEPESTDESCENT_H
 
-#include "matrix.h"
+#include "BaseMatrix.h"
 
 enum STEEP_CONSTANTS
 {
@@ -18,15 +18,11 @@ enum STEEP_CONSTANTS
   ERROR = 1
 };
 
-// SteepestDescent error messages.
-const string WRONG_FORM = "Error: Attempting to solve a system by steepest "
-                          "descent when Matrix A is not positive definite!";
-
 /// This class contains a functor that will solve a system of equations by the
 /// method of steepest descent.
 ///
 /// \pre Assignment operator (=) must be defined for T (T = T).
-template <class T>
+template <class Derived, class T>
 class SteepestDescent
 {
   public:
@@ -48,34 +44,39 @@ class SteepestDescent
     ///         matrix.
     ///
     /// \return A Vector that is the approximate solution to the system Ax = b.
-    Vector<T> operator ()(const Matrix<T> &a_matrix, const Vector<T> &b_vector)
+    Vector<T> operator ()(const BaseMatrix<Derived, T> &a_matrix, const Vector<T> &b_vector)
     {
       // Check that a_matrix is positive definite.
-      if (!a_matrix.isPositiveDefinite())
+      if (!a_matrix.d_dom()){
         throw domain_error(WRONG_FORM);
+      }
 
-      Vector<T> x(b_vector.getSize());
+      Vector<T> x(b_vector);
       Vector<T> r(b_vector.getSize());
       Vector<T> old_x(b_vector.getSize());
 
       T a;
-
-      // Initialize x.
-      for (unsigned int k = 0; k < x.getSize(); k++)
-        x[k] = INITIAL_VALUE;
+      unsigned int count = 0;
 
       // Perform steepest descent until small error in between x vectors.
       do
       {
         old_x = x;
-        
-        r = b_vector - (a_matrix * x);
+          
+        if (!(count % 5))
+        {
+          r = b_vector - (a_matrix * x);
+        }
+        else
+        {
+          r = r - ((a_matrix * r) * a);
+        }
 
         a = (r * r) / (r * (a_matrix * r));
 
         x = x + (r * a);
       }
-      while (((~(x - old_x)) / ~old_x) > 0.000000001);
+      while (((~(x - old_x)) / ~old_x) > 1e-9);
 
       return x;
     }

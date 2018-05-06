@@ -17,6 +17,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <memory>
+
 using namespace std;
 
 // Global Constants
@@ -44,6 +45,10 @@ const string INVALID_DATA = "Error: There was not enough data to fill Array, "
                             "Vector, or Matrix.";
 const string MATRIX_OUT = "Error: Requested row or column does not exist in "
                           "Matrix or Matrix is empty!";
+
+// SteepestDescent and GuassSiedel error messages.
+const string WRONG_FORM = "Error: Attempting to solve a system by steepest "
+                          "descent when Matrix A is not positive definite!";
 
 const unsigned int MIN_SIZE = 0, VECTOR_COLS = 1;
 

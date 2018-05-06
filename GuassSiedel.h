@@ -18,6 +18,11 @@ class GuassSiedel
 	
 		Vector<T> operator ()(const BaseMatrix<MeshMatrix<T>, T>& a_matrix, const Vector<T> &b_vector)
 		{
+			// Check that a_matrix is positive definite.
+	    	if (!a_matrix.d_dom()){
+	        	throw domain_error(WRONG_FORM);
+	    	}
+
 			Vector<T> result(b_vector), old_result;
 			
 			do 

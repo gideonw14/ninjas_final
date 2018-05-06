@@ -13,14 +13,24 @@
 #include "MeshMatrix.h"
 #include "GeneralMatrix.h"
 #include "GuassSiedel.h"
+#include "steepestdescent.h"
+#include "GenerateLinearSystem.h"
 #include <iostream>
 #include <string>
 #include <iomanip>
 #include <fstream>
 #include <math.h>
-using namespace std;	
+#include <ctime>
+#include <chrono>
+#include <ratio>
+using namespace std;
+using namespace std::chrono;
+const int PRECISION = 3;
 
-const int PRECISION = 8;
+double lower_bound (double x) {return 1 - 4 * pow((x - 1.0/2), 2);}
+double upper_bound (double x) {x = 0; return x;}
+double right_bound (double y) {y = 0; return y;}
+double left_bound  (double y) {y = 0; return y;}
 
 template<class U, class T>
 void file_input(int argc, char* argv[], U& matrix, Vector<T>& vector){
@@ -66,23 +76,47 @@ void file_input(int argc, char* argv[], U& matrix, Vector<T>& vector){
 
 int main(int argc, char* argv[]){
 	cout << setprecision(PRECISION);
-	cout << argc << " " << argv[0] << endl;
+	high_resolution_clock::time_point guass_start;
+	high_resolution_clock::time_point guass_finish;
+	high_resolution_clock::time_point steep_start;
+	high_resolution_clock::time_point steep_finish;
+	if(argc != 2){
+		cerr << "Please give exactly 1 CL arg with the number of partitions." << endl;
+		exit(1);
+	}
 	try{
-		BaseMatrix<MeshMatrix<double>, double> *mesh = new MeshMatrix<double>(5, 4);
-		BaseMatrix<GeneralMatrix<double>, double> *general = new GeneralMatrix<double>(4);
-		Vector<double> vec(5);
-
-		for(int i=0; i<5; i++){
-			vec[i] = i;
-		}
-		file_input(*general, vec);
-		cout << *mesh << endl;
-		cout << vec << endl;
-		cout << *mesh - *mesh << endl;
-		
+		unsigned int partitions = atoi(argv[1]);
+		unsigned int matrix_size = static_cast<unsigned int>(pow((partitions - 1), 2));
+		BaseMatrix<MeshMatrix<double>, double> *mesh = new MeshMatrix<double>(matrix_size, partitions);
 		GuassSiedel<MeshMatrix<double>, double> guass;
+		SteepestDescent<MeshMatrix<double>, double> steep;
+		GenerateBVector<double, left_bound, right_bound, upper_bound, lower_bound> generate;
+		Vector<double> vec = generate(partitions);
 		
-		cout << guass(*mesh, vec) << endl;
+		guass_start = high_resolution_clock::now();
+		Vector<double> guass_result = guass(*mesh, vec);
+		guass_finish = high_resolution_clock::now();
+
+		steep_start = high_resolution_clock::now();
+		Vector<double> steep_result = steep(*mesh, vec);
+		steep_finish = high_resolution_clock::now();
+
+		duration<double> guass_time = duration_cast<duration<double>>(guass_finish - guass_start);
+		duration<double> steep_time = duration_cast<duration<double>>(steep_finish - steep_start);
+		cout << "GuassSiedel finished in " << guass_time.count() << " seconds." << endl;
+		cout << "SteepestDescent finished in " << steep_time.count() << " seconds." << endl;
+
+		cout << "SteepestDescent result" << endl;
+		
+		unsigned int count = matrix_size - 1;
+		for(unsigned int i=partitions-1; i > 0; i--){
+			for(unsigned int j=partitions-1; j > 0; j--){
+				cout << steep_result[count] << " ";
+				count--;
+			}
+			cout << endl;
+		}
+		cout << endl;
 	}
 	catch(const exception& e){
 		cerr << e.what() << endl;
