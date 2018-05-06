@@ -135,7 +135,10 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::add_assign(const BaseMatrix<Deri
 		throw invalid_argument("Sizes must match for addition!");
 	}
 	
-	grid += other.grid;	
+	// Add each row in calling BaseMatrix with each row in other.
+	for(unsigned int i=0; i<grid.getSize(); i++){
+		grid[i] += other.grid[i];
+	}
 	return *this;
 }
 
@@ -147,7 +150,10 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::subtract_assign(const BaseMatrix
 		throw invalid_argument("Sizes must match for subtraction!");
 	}
 	
-	grid -= other.grid;
+	// Subtract each row in calling BaseMatrix by each row in other.
+	for(unsigned int i=0; i<grid.getSize(); i++){
+		grid[i] -= other.grid[i];
+	}
 	return *this;
 }
 
@@ -155,14 +161,15 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::subtract_assign(const BaseMatrix
 template<class Derived, class T>
 Vector<T> BaseMatrix<Derived, T>::vector_multiply(const Vector<T>& vector) const{
 	// Check that the size of vector is equal to calling BaseMatrix
-	if(size != vector.get_size()){
+	if(size != vector.getSize()){
 		throw invalid_argument("Vector size must equal Matrix size!");
 	}
 	
 	// Function objects and variables.
 	Vector<T> result_vector(size);
-	T sum;
-	T product;
+	
+	T sum = 0;
+	T product = 0;
 	
 	// Set each index in resultant Vector to the dot product between
 	// corresponding row in calling BaseMatrix and vector.
@@ -204,15 +211,16 @@ BaseMatrix<GeneralMatrix<T>, T> BaseMatrix<Derived, T>::multiply(const BaseMatri
 	
 	// Function variables.
 	T product;
-	T sum;
+	T sum = 0;
 	
 	// Set corresponding row and column in temp with dot product of row in
 	// calling BaseMatrix and column in other.
 	for(unsigned int i=0; i<size; i++){
 		for(unsigned int j=0; j<size; j++){
+			sum = 0;
 			for(unsigned int k=0; k<size; k++){
 				product = (*this)(i, k) * other(k, j);
-				k==0 ? sum = product : sum += product;
+				sum += product;
 			}
 			temp(i, j) = sum;	
 		}
@@ -230,6 +238,16 @@ BaseMatrix<Derived, T> BaseMatrix<Derived, T>::scalar_multiply(const T& scalar) 
 
 // Transpose operator ~ for calculating the transpose of calling BaseMatrix
 // default implementation.
+template<class Derived, class T>
+BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::scalar_multiply_assign(const T& scalar){
+	for(unsigned int i=0; i<grid.getSize(); i++){
+		for(unsigned int j=0; j<grid[i].getSize(); j++){
+			grid[i][j] *= scalar;
+		}
+	}
+	return *this;
+}
+
 template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::transpose() const{
 	// Function Object.
@@ -268,8 +286,8 @@ const T& BaseMatrix<Derived, T>::get_data(const unsigned int& height, const unsi
 template<class Derived, class T>
 bool BaseMatrix<Derived, T>::p_def_derived() const{
 	// Function variables.
-	T diagonal;
-	T sum;
+	T diagonal = 0;
+	T sum = 0;
 	
 	// Check for a symmetric and diagonally dominant BaseMatrix.
 	for(unsigned int i=0; i<size; i++){

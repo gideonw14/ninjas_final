@@ -56,28 +56,19 @@ class SteepestDescent
       Vector<T> old_x(b_vector.getSize());
 
       T a;
-      unsigned int count = 0;
-
+      unsigned long iterations = 0;
       // Perform steepest descent until small error in between x vectors.
       do
       {
+        iterations++;
         old_x = x;
-          
-        if (!(count % 5))
-        {
-          r = b_vector - (a_matrix * x);
-        }
-        else
-        {
-          r = r - ((a_matrix * r) * a);
-        }
-
+        r = b_vector - (a_matrix * x);
         a = (r * r) / (r * (a_matrix * r));
 
         x = x + (r * a);
       }
       while (((~(x - old_x)) / ~old_x) > 1e-9);
-
+      cout << "SteepestDescent iterations: " << iterations << endl;
       return x;
     }
 };
