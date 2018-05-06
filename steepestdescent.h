@@ -39,6 +39,8 @@ class SteepestDescent
     /// \pre Binary division operator (/) must be defined for T (T / T).
     /// \pre Binary multiplication operator (*) must be defined for T with 
     ///      integers (T * int).
+	/// \pre Comparison operator (>) must be defined for T with double 
+	///      (T > double).
     ///
     /// \throws std::domain_error if a_matrix is not a positive definite 
     ///         matrix.

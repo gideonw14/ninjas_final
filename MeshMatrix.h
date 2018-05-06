@@ -19,6 +19,8 @@
 /// \pre All diagonal and special band values are uniform for every spot in the
 ///      diagonal or special band.
 /// \pre Data outside of diagonals or special bands cannot be modified.
+/// \pre integers must be able to be statically cast to type T 
+///      (static_cast<T>(int))
 template<class T>
 class MeshMatrix: public BaseMatrix<MeshMatrix<T>, T>{
 private:
@@ -54,7 +56,7 @@ public:
 	///      MeshMatrix parametrized constructor.
 	///
 	/// \post A new MeshMatrix is generated based on partitions.
-	MeshMatrix(const unsigned int& new_partitions): BaseMatrix<MeshMatrix<T>, T>(new_partitions)
+	MeshMatrix(const unsigned int& new_partitions): BaseMatrix<MeshMatrix<T>, T>(new_partitions) {}
 	
 	/// Copy Constructor.
 	///
@@ -89,7 +91,7 @@ public:
 	///      function's requirements before calling MeshMatrix equal function.
 	///
 	/// \return A reference to calling MeshMatrix that is now equal to other.
-	MeshMatrix<T>& equal(const MeshMatrix<T>& other);
+	MeshMatrix<T>& operator=(const MeshMatrix<T>& other);
 	
 	/// Parentheses operator () implementation for read-and-write access of a 
 	/// MeshMatrix.
@@ -133,11 +135,41 @@ public:
 	/// \pre vector must have the same number of elements as the size of
 	///      calling MeshMatrix.
 	///
+	/// \throws std::invalid_argument if calling MeshMatrix and vector are not
+	///         the same size.
+	///
 	/// \return A Vector that is the result of calling MeshMatrix times vector.
 	Vector<T> vector_multiply(const Vector<T>& vector) const;
-	void set_size_derived(const unsigned int& new_size);
-	MeshMatrix<T> transpose() const { return *this; }
+	
+	/// set_size implementation for a MeshMatrix.
+	///
+	/// \param new_partitions The desired new partition to generate a 
+	///        MeshMatrix from.
+	///
+	/// \pre This function will generate a brand new MeshMatrix. All data from
+	///      previous MeshMatrix will be lost.
+	///
+	/// \post A new MeshMatrix has been generated based on the new number of
+	///       partitions in approximation mesh.
+	void set_size_derived(const unsigned int& new_partitions);
+	
+	/// Transpose operator ~ implementation for MeshMatrix.
+	/// 
+	/// \return A copy of calling Matrix since all MeshMatrix transpose is
+	///         themselves.
+	MeshMatrix<T> transpose() const {return *this;}
+	
+	/// p_def implementation to determine if a MeshMatrix is positive definite
+	/// or not.
+	///
+	/// \return True if calling MeshMatrix is symmetric and diagonally dominant
+	///         and false otherwise.
 	bool p_def_derived() const;
+	
+	/// clear implementation for a MeshMatrix.
+	///
+	/// \post The MeshMatrix is now back to its default empty state.
+	void erase();
 };
 
 #include "MeshMatrix.hpp"

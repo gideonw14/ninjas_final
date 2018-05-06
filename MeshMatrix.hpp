@@ -12,9 +12,9 @@ const T MeshMatrix<T>::zero = 0;
 
 // Assignment operator (=) implementation.
 template<class T>
-MeshMatrix<T>& MeshMatrix<T>::equal(const MeshMatrix<T>& other){
-	partitions = other.partitions;
+MeshMatrix<T>& MeshMatrix<T>::operator=(const MeshMatrix<T>& other){
 	BaseMatrix<MeshMatrix<T>, T>::operator=(other);
+	partitions = other.partitions;
 	return *this;
 }
 
@@ -77,6 +77,7 @@ const T& MeshMatrix<T>::get_data(const unsigned int& height, const unsigned int&
 // Binary operator * implementation for Vector multiplication.
 template<class T>
 Vector<T> MeshMatrix<T>::vector_multiply(const Vector<T>& vector) const{
+	// Check that vector's size is same as MeshMatrix size.
 	if(this->size != vector.getSize()){
 		throw invalid_argument("Vector size must equal BandedMatrix width!");
 	}
@@ -106,15 +107,29 @@ Vector<T> MeshMatrix<T>::vector_multiply(const Vector<T>& vector) const{
 	return result_vector;
 }
 
+// set_size implementation for a MeshMatrix.
 template<class T>
-void MeshMatrix<T>::set_size_derived(const unsigned int& new_size){
-	this->size = new_size;
+void MeshMatrix<T>::set_size_derived(const unsigned int& new_partitions){
+	partitions = new_partitions;
+	this->size = static_cast<unsigned int>(pow(new_partitions - 1, 2));
+	this->grid.setSize(1);
+	this->grid[0].setSize(3);
 	this->grid[0][DIAGONAL] = 1;
 	this->grid[0][PARTITION] = static_cast<T>(-1)/4;
 	this->grid[0][ZERO] = 0;
 }
 
+// p_def implementation for a MeshMatrix.
 template<class T>
 bool MeshMatrix<T>::p_def_derived() const{
 	return (4 * fabs(this->grid[0][PARTITION]) <= this->grid[0][DIAGONAL]);
+}
+
+// clear implementation for a MeshMatrix.
+template <class T>
+void MeshMatrix<T>::erase(){
+	partitions = MIN_SIZE; 
+	this->size = MIN_SIZE; 
+	this->grid.clear(); 
+	return;
 }

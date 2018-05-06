@@ -54,7 +54,7 @@ public:
 	///      constructor.
 	///
 	/// \post A new GeneralMatrix is constructed that is a copy of other.
-	GeneralMatrix(const GeneralMatrix<T>& other): BaseMatrix<GeneralMatrix<T>, T>(other) {}
+	GeneralMatrix(const GeneralMatrix<T>& other) {*this = other;}
 	
 	/// Move Constructor.
 	///

@@ -1,13 +1,12 @@
-/*******************************************************************************
-	Filename: 	driver.cpp
-	Programmer: Gideon Walker
-	Class: 		CS 5201 - Prof. Price
-	Assignment: Final project
-	Due: 		Wednesday, April 18, 2018
-
-	Description:
-		Driver file for final project.
-*******************************************************************************/
+//*****************************************************************************
+// Programmers: Charles Gaitley and Gideon Walker	Due Date: 05/06/2018
+// Class: CS 5201									Section: A
+// File: driver.cpp
+// Description: This file contains our driver which will test the number of
+//              iterations and time to compute for the Guass Siedel and
+//              steepest descent methods with solving a linear system to
+//              approximate a solution to a PDE.
+//*****************************************************************************
 
 #include "BaseMatrix.h"
 #include "MeshMatrix.h"
@@ -23,7 +22,6 @@
 #include <ctime>
 #include <chrono>
 #include <ratio>
-using namespace std;
 using namespace std::chrono;
 const int PRECISION = 3;
 
@@ -57,7 +55,8 @@ void file_input(char* argv[], U& matrix, Vector<T>& vector){
 		
 	try{
 		matrix.set_size(size);
-		vector.setSize(size);
+		cout << matrix.get_size() << endl;
+		vector.setSize(static_cast<unsigned int>(pow(size - 1, 2)));
 		input_file >> matrix;
 		input_file >> vector;
 		cout << "Testing this matrix: " << endl;
@@ -82,6 +81,7 @@ void tester(char* argv[], BaseMatrix<Derived, T>& matrix, string title){
 	cout << copy_matrix << endl;
 	cout << "Matrix multiplication" << endl;
 	cout << matrix * matrix << endl;
+	cout << matrix << endl;
 	cout << "Matrix addition" << endl;
 	cout << matrix + matrix << endl;
 	cout << "Matrix subtraction" << endl;
@@ -92,7 +92,7 @@ void tester(char* argv[], BaseMatrix<Derived, T>& matrix, string title){
 	cout << matrix * 3 << endl;
 	cout << "Matrix transpose " << endl;
 	cout << ~matrix << endl;
-	cout << "Diagonally dominant? " << (matrix.d_dom() ? "true" : "false") << endl << endl;
+	cout << "Diagonally dominant? " << (matrix.p_def() ? "true" : "false") << endl << endl;
 }
 
 int main(int argc, char* argv[]){
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]){
 	try{
 
 		// ### Testing ###
-		BaseMatrix<MeshMatrix<double>, double> *test_mesh = new MeshMatrix<double>(9, 4);
+		BaseMatrix<MeshMatrix<double>, double> *test_mesh = new MeshMatrix<double>(4);
 		BaseMatrix<GeneralMatrix<double>, double> *test_general = new GeneralMatrix<double>;
 		tester(argv, *test_mesh, "Mesh");
 		tester(argv, *test_general, "General");
@@ -116,8 +116,7 @@ int main(int argc, char* argv[]){
 		// ### PDE Approximation ###
 		// Initializze Variables
 		unsigned int partitions = atoi(argv[2]);
-		unsigned int matrix_size = static_cast<unsigned int>(pow((partitions - 1), 2));
-		BaseMatrix<MeshMatrix<double>, double> *mesh = new MeshMatrix<double>(matrix_size, partitions);
+		BaseMatrix<MeshMatrix<double>, double> *mesh = new MeshMatrix<double>(partitions);
 		GuassSiedel<MeshMatrix<double>, double> guass;
 		SteepestDescent<MeshMatrix<double>, double> steep;
 		GenerateBVector<double, left_bound, right_bound, upper_bound, lower_bound> generate;

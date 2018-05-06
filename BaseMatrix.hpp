@@ -120,13 +120,6 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::equal(const BaseMatrix<Derived, 
 	return *this;
 }
 
-// Operator *= default implementation.
-template<class Derived, class T>
-BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::scalar_multiply_assign(const T& scalar){
-	grid*=scalar; 
-	return *this;
-}
-
 // Operator += default implementation
 template<class Derived, class T>
 BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::add_assign(const BaseMatrix<Derived, T>& other){

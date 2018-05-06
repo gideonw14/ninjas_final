@@ -541,7 +541,7 @@ ostream& operator<<(ostream& os, const BaseMatrix<Derived, T>& matrix){
 
 // Overloaded extraction operator (>>).
 template<class Derived, class T>
-isstream& operator>>(istream& is, BaseMatrix<Derived, T>& matrix){
+istream& operator>>(istream& is, BaseMatrix<Derived, T>& matrix){
 	// Extract data until matrix is completely filled with data.
 	for(unsigned int i=0; i<matrix.get_size(); i++){
 		for(unsigned int j=0; j<matrix.get_size(); j++){
