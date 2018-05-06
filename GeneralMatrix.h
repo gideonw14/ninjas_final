@@ -10,7 +10,7 @@ template<class T> void swap(GeneralMatrix<T>& left, GeneralMatrix<T>& right);
 template<class T>
 class GeneralMatrix: public BaseMatrix<GeneralMatrix<T>, T>{
 public:
-	GeneralMatrix() {this->size(0);}
+	GeneralMatrix() {this->size=0;}
 	GeneralMatrix(const unsigned int& new_size){
 		this->size = new_size;
 		this->grid.setSize(new_size);

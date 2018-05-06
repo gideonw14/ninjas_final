@@ -101,7 +101,9 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::add_assign(const BaseMatrix<Deri
 	if(other.size != size){
 		throw invalid_argument("Sizes must match for addition!");
 	}
-	grid += other.grid;	
+	for(unsigned int i=0; i<grid.getSize(); i++){
+		grid[i] += other.grid[i];
+	}
 	return *this;
 }
 
@@ -110,18 +112,20 @@ BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::subtract_assign(const BaseMatrix
 	if(other.size != size){
 		throw invalid_argument("Sizes must match for subtraction!");
 	}
-	grid -= other.grid;
+	for(unsigned int i=0; i<grid.getSize(); i++){
+		grid[i] -= other.grid[i];
+	}
 	return *this;
 }
 
 template<class Derived, class T>
 Vector<T> BaseMatrix<Derived, T>::vector_multiply(const Vector<T>& vector) const{
-	if(size != vector.get_size()){
+	if(size != vector.getSize()){
 		throw invalid_argument("Vector size must equal Matrix size!");
 	}
 	Vector<T> result_vector(size);
-	T sum;
-	T product;
+	T sum = 0;
+	T product = 0;
 	for(unsigned int h=0; h<size; h++){
 		for(unsigned int w=0; w<size; w++){
 			product = (*this)(h, w) * vector[w];
@@ -151,12 +155,13 @@ BaseMatrix<GeneralMatrix<T>, T> BaseMatrix<Derived, T>::multiply(const BaseMatri
 	}
 	BaseMatrix<GeneralMatrix<T>, T> temp = convert_to_general(*this);
 	T product;
-	T sum;
+	T sum = 0;
 	for(unsigned int i=0; i<size; i++){
 		for(unsigned int j=0; j<size; j++){
+			sum = 0;
 			for(unsigned int k=0; k<size; k++){
 				product = (*this)(i, k) * other(k, j);
-				k==0 ? sum = product : sum += product;
+				sum += product;
 			}
 			temp(i, j) = sum;	
 		}
@@ -168,6 +173,16 @@ template<class Derived, class T>
 BaseMatrix<Derived, T> BaseMatrix<Derived, T>::scalar_multiply(const T& scalar) const{
 	BaseMatrix<Derived, T> temp(*this);
 	return temp *= scalar;
+}
+
+template<class Derived, class T>
+BaseMatrix<Derived, T>& BaseMatrix<Derived, T>::scalar_multiply_assign(const T& scalar){
+	for(unsigned int i=0; i<grid.getSize(); i++){
+		for(unsigned int j=0; j<grid[i].getSize(); j++){
+			grid[i][j] *= scalar;
+		}
+	}
+	return *this;
 }
 
 template<class Derived, class T>
@@ -193,8 +208,8 @@ const T& BaseMatrix<Derived, T>::get_data(const unsigned int& height, const unsi
 
 template<class Derived, class T>
 bool BaseMatrix<Derived, T>::d_dom_derived() const{
-	T diagonal;
-	T sum;
+	T diagonal = 0;
+	T sum = 0;
 	for(unsigned int i=0; i<size; i++){
 		sum = 0;
 		for(unsigned int j=0; j<size; j++){

@@ -197,7 +197,7 @@ public:
 	Derived& asDerived(){ return static_cast<Derived&>(*this); }
 	const Derived& asDerived() const { return static_cast<const Derived&>(*this); }
 
-	BaseMatrix<Derived, T>& scalar_multiply_assign(const T& scalar){grid*=scalar; return *this;}
+	BaseMatrix<Derived, T>& scalar_multiply_assign(const T& scalar);
 
 	BaseMatrix<Derived, T>& add_assign(const BaseMatrix<Derived, T>& other);
 	BaseMatrix<Derived, T>& subtract_assign(const BaseMatrix<Derived, T>& other);

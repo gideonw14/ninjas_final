@@ -24,9 +24,10 @@ class GuassSiedel
 	    	}
 
 			Vector<T> result(b_vector), old_result;
-			
+			unsigned long iterations = 0;
 			do 
 			{
+				iterations++;
 				old_result = result;
 				
 				for (unsigned int k = 0; k < result.getSize(); k++)
@@ -41,7 +42,7 @@ class GuassSiedel
 				}
 			}
 			while (((~(result - old_result)) / ~old_result) > 1e-9);
-			
+			cout << "GuassSiedel iterations: " << iterations << endl;
 			return result;
 		}
 };
